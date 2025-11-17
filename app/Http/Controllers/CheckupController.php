@@ -9,9 +9,28 @@ use Illuminate\Http\Request;
 
 class CheckupController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $checkups = Checkup::with(['pet', 'treatment'])->paginate(10);
+        $query = Checkup::with(['pet.owner', 'treatment']);
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('diagnosis', 'like', '%' . $search . '%')
+                  ->orWhere('notes', 'like', '%' . $search . '%')
+                  ->orWhereHas('pet', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('pet.owner', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('treatment', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        $checkups = $query->paginate(10)->appends(['search' => $request->search]);
         return view('checkups.index', compact('checkups'));
     }
 

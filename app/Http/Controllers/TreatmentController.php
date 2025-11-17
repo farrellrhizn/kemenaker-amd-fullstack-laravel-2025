@@ -7,9 +7,19 @@ use Illuminate\Http\Request;
 
 class TreatmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $treatments = Treatment::paginate(10);
+        $query = Treatment::query();
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+        
+        $treatments = $query->paginate(10)->appends(['search' => $request->search]);
         return view('treatments.index', compact('treatments'));
     }
 

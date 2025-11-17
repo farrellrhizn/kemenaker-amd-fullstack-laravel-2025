@@ -3,14 +3,38 @@
 @section('title', 'Checkups - PetCare+')
 
 @section('content')
-<div class="mb-6 flex justify-between items-center">
+<div class="flex justify-between items-center mb-6">
     <h1 class="text-3xl font-bold text-foreground">Checkups</h1>
-    <a href="{{ route('checkups.create') }}" class="inline-flex items-center px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-medium">
+    <a href="{{ route('checkups.create') }}" class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-medium">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
         Add New Checkup
     </a>
+</div>
+
+<!-- Search Form -->
+<div class="mb-6">
+    <form action="{{ route('checkups.index') }}" method="GET" class="flex gap-2">
+        <div class="flex-1">
+            <input type="text" 
+                   name="search" 
+                   value="{{ request('search') }}" 
+                   placeholder="Search by pet name, owner name, treatment, diagnosis, or notes..." 
+                   class="w-full px-4 py-2 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+        </div>
+        <button type="submit" class="inline-flex items-center px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-sm font-medium">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Search
+        </button>
+        @if(request('search'))
+        <a href="{{ route('checkups.index') }}" class="inline-flex items-center px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors shadow-sm font-medium">
+            Clear
+        </a>
+        @endif
+    </form>
 </div>
 
 <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">

@@ -9,9 +9,23 @@ use Illuminate\Validation\ValidationException;
 
 class PetController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pets = Pet::with('owner')->paginate(10);
+        $query = Pet::with('owner');
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('species', 'like', '%' . $search . '%')
+                  ->orWhere('registration_code', 'like', '%' . $search . '%')
+                  ->orWhereHas('owner', function($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        $pets = $query->paginate(10)->appends(['search' => $request->search]);
         return view('pets.index', compact('pets'));
     }
 
